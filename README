@@ -3,6 +3,7 @@ Given a set of AWS API Keys, enumerate various information about accessible AWS 
 Currently it lists:
   - EC2 Instances (type, IP, status)
   - S3 Buckets (name, number of objects)
+  - Lightsail Instances (name, username, IP, state)
 
 Sample Usage:
   $ ./AWSEnumerator.py AKXXXXXXXXXXXXXXXXXA ENtXXXXXXXXXXXXXXXXXq
@@ -20,3 +21,6 @@ Sample Usage:
   Total # of EC2 Instances: 2
     Instance: t2.nano - 52.570.576.548 - running
     Instance: t2.small - stopped
+  Checking for Lightsail Instances
+    Total # of Lightsail instances: 1
+      Name: enumtest1, Username: ubuntu, IP: 254.244.198.296, State: running
