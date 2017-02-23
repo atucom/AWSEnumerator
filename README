@@ -1,0 +1,5 @@
+Given a set of AWS API Keys, enumerate various information about accessible AWS services.
+
+Currently it lists:
+  - EC2 Instances (type, IP, status)
+  - S3 Buckets (name, number of objects)
