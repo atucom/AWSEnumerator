@@ -8,19 +8,20 @@ Currently it lists:
 Sample Usage:
   $ ./AWSEnumerator.py AKXXXXXXXXXXXXXXXXXA ENtXXXXXXXXXXXXXXXXXq
   Checking for S3 buckets
-  Total # of buckets: 9
-    Bucket: bucket1 [8 objects]
-    Bucket: bucket2 [1000 objects]
-    Bucket: bucket3-dev [1000 objects]
-    Bucket: bucket4 [1 objects]
-    Bucket: bucket5 [747 objects]
-    Bucket: otherbucket [1000 objects]
-    Bucket: morebucket [54 objects]
-    Bucket: whereismahbucket [26 objects]
-    Bucket: ilikefish [95 objects]
-  Total # of EC2 Instances: 2
-    Instance: t2.nano - 52.570.576.548 - running
-    Instance: t2.small - stopped
+    Total # of buckets: 9
+      Bucket: bucket1 [8 objects]
+      Bucket: bucket2 [1000 objects]
+      Bucket: bucket3-dev [1000 objects]
+      Bucket: bucket4 [1 objects]
+      Bucket: bucket5 [747 objects]
+      Bucket: otherbucket [1000 objects]
+      Bucket: morebucket [54 objects]
+      Bucket: whereismahbucket [26 objects]
+      Bucket: ilikefish [95 objects]
+  Checking for EC2 Instances
+    Total # of EC2 Instances: 2
+      Instance: t2.nano - 52.570.576.548 - running
+      Instance: t2.small - stopped
   Checking for Lightsail Instances
     Total # of Lightsail instances: 1
       Name: enumtest1, Username: ubuntu, IP: 254.244.198.296, State: running
