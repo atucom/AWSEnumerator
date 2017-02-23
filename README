@@ -4,6 +4,7 @@ Currently it lists:
   - EC2 Instances (type, IP, status)
   - S3 Buckets (name, number of objects)
   - Lightsail Instances (name, username, IP, state)
+  - DynamoDB (table name)
 
 Sample Usage:
   $ ./AWSEnumerator.py AKXXXXXXXXXXXXXXXXXA ENtXXXXXXXXXXXXXXXXXq
@@ -25,3 +26,7 @@ Sample Usage:
   Checking for Lightsail Instances
     Total # of Lightsail instances: 1
       Name: enumtest1, Username: ubuntu, IP: 254.244.198.296, State: running
+  Checking for DynamoDB Tables
+    Total # of DynamoDB Tables: 2
+      Table Name: tabletest
+      Table Name: test2

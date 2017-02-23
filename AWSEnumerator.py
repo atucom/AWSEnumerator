@@ -3,6 +3,7 @@ import boto3
 from botocore.exceptions import ClientError
 import sys
 import argparse
+from IPython import embed
 
 class AWSEnumerator():
   def __init__(self, access_key, secret_key):
@@ -60,9 +61,23 @@ class AWSEnumerator():
           print("    Name: %s, Username: %s, IP: %s, State: %s" % (i['name'], i['username'],i['publicIpAddress'],i['state']['name']))
     except ClientError as e:
       print("    Failure Reason: %s" %e.response['Error']['Code'])
+      return
+
+  def list_dynamoDB(self):
+    print("Checking for DynamoDB Tables")
+    dynamo_client = self.session.client("dynamodb")
+    try:
+      response = dynamo_client.list_tables()
+      print("  Total # of DynamoDB Tables: %s" % len(response['TableNames']))
+      for table in response['TableNames']:
+        print("    Table Name: %s" % table)
+    except ClientError as e:
+      print("    Failure Reason: %s" %e.response['Error']['Code'])
 
   def list_route53():
     pass
+
+
 
 def main():
   """Main Execution"""
@@ -83,6 +98,7 @@ def main():
   a.list_s3()
   a.list_ec2()
   a.list_lightsail()
+  a.list_dynamoDB()
 
 if __name__ == '__main__':
   sys.exit(main())
