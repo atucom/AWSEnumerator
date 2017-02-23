@@ -3,3 +3,20 @@ Given a set of AWS API Keys, enumerate various information about accessible AWS 
 Currently it lists:
   - EC2 Instances (type, IP, status)
   - S3 Buckets (name, number of objects)
+
+Sample Usage:
+  $ ./AWSEnumerator.py AKXXXXXXXXXXXXXXXXXA ENtXXXXXXXXXXXXXXXXXq
+  Checking for S3 buckets
+  Total # of buckets: 9
+    Bucket: bucket1 [8 objects]
+    Bucket: bucket2 [1000 objects]
+    Bucket: bucket3-dev [1000 objects]
+    Bucket: bucket4 [1 objects]
+    Bucket: bucket5 [747 objects]
+    Bucket: otherbucket [1000 objects]
+    Bucket: morebucket [54 objects]
+    Bucket: whereismahbucket [26 objects]
+    Bucket: ilikefish [95 objects]
+  Total # of EC2 Instances: 2
+    Instance: t2.nano - 52.570.576.548 - running
+    Instance: t2.small - stopped
