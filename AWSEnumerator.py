@@ -18,15 +18,15 @@ class AWSEnumerator():
     except ClientError as e:
       print("  Failure Reason: %s" %e.response['Error']['Code'])
       return
-    print("Total # of buckets: %s" % len(buckets['Buckets']))
+    print("  Total # of S3 buckets: %s" % len(buckets['Buckets']))
     for bucket in buckets['Buckets']:
       try:
         objectlist = s3_client.list_objects(Bucket=bucket['Name'])
-        print("  Bucket: %s [%i objects]" % (bucket['Name'], len(objectlist['Contents'])))
+        print("    Bucket: %s [%i objects]" % (bucket['Name'], len(objectlist['Contents'])))
       except KeyError: #Catch if no objects in bucket object listing
-        print("  Bucket: %s [empty]" % (bucket['Name']))
+        print("    Bucket: %s [empty]" % (bucket['Name']))
       except ClientError as e: #Errors a lot if in region that requires AWS4-HMAC-SHA256
-        print("  Bucket: %s Failure Reason: %s" % (bucket['Name'],e.response['Error']['Code']))
+        print("    Bucket: %s Failure Reason: %s" % (bucket['Name'],e.response['Error']['Code']))
 
 
   def list_ec2(self):
@@ -35,23 +35,31 @@ class AWSEnumerator():
     ec2_client = self.session.client("ec2")
     try:
       ec2_instances = ec2_client.describe_instances()
-      print("Total # of EC2 Instances: %s" % len(ec2_instances['Reservations']))
+      print("  Total # of EC2 Instances: %s" % len(ec2_instances['Reservations']))
       #ec2 json responses have a lot of arrays and lists so parsing them is dumb
       for instance in ec2_instances['Reservations']:
         status = instance['Instances'][0]['State']['Name']
         if status == "running":
           instance_type = instance['Instances'][0]['InstanceType']
           public_ip = instance['Instances'][0]['NetworkInterfaces'][0]['Association']['PublicIp']
-          print("  Instance: %s - %s - %s " %(instance_type, public_ip, status))
+          print("    Instance: %s - %s - %s " %(instance_type, public_ip, status))
         else:
           instance_type = instance['Instances'][0]['InstanceType']
-          print("  Instance: %s - %s" %(instance_type, status))
+          print("    Instance: %s - %s" %(instance_type, status))
     except ClientError as e:
-      print("  Failure Reason: %s" %e.response['Error']['Code'])
+      print("    Failure Reason: %s" %e.response['Error']['Code'])
       return
 
-  def list_lightsail():
-    pass
+  def list_lightsail(self):
+    print("Checking for Lightsail Instances")
+    lightsail_client = self.session.client("lightsail")
+    try:
+      instances = lightsail_client.get_instances()
+      print("  Total # of Lightsail instances: %s" % len(instances['instances']))
+      for i in instances['instances']:
+          print("    Name: %s, Username: %s, IP: %s, State: %s" % (i['name'], i['username'],i['publicIpAddress'],i['state']['name']))
+    except ClientError as e:
+      print("    Failure Reason: %s" %e.response['Error']['Code'])
 
   def list_route53():
     pass
@@ -74,6 +82,7 @@ def main():
   a = AWSEnumerator(access_key, secret_key)
   a.list_s3()
   a.list_ec2()
+  a.list_lightsail()
 
 if __name__ == '__main__':
   sys.exit(main())
