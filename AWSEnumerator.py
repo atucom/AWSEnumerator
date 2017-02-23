@@ -16,15 +16,18 @@ class AWSEnumerator():
     try:
       buckets = s3_client.list_buckets()
     except ClientError as e:
-      #if e.response['Error']['Code'] == 'AccessDenied':
-      return e.response['Error']['Code']
+      print("  Failure Reason: %s" %e.response['Error']['Code'])
+      return
     print("Total # of buckets: %s" % len(buckets['Buckets']))
     for bucket in buckets['Buckets']:
       try:
         objectlist = s3_client.list_objects(Bucket=bucket['Name'])
         print("  Bucket: %s [%i objects]" % (bucket['Name'], len(objectlist['Contents'])))
-      except KeyError:
+      except KeyError: #Catch if no objects in bucket object listing
         print("  Bucket: %s [empty]" % (bucket['Name']))
+      except ClientError as e: #Errors a lot if in region that requires AWS4-HMAC-SHA256
+        print("  Bucket: %s Failure Reason: %s" % (bucket['Name'],e.response['Error']['Code']))
+
 
   def list_ec2(self):
     #list out count, name, public DNS, IP,
@@ -35,20 +38,17 @@ class AWSEnumerator():
       print("Total # of EC2 Instances: %s" % len(ec2_instances['Reservations']))
       #ec2 json responses have a lot of arrays and lists so parsing them is dumb
       for instance in ec2_instances['Reservations']:
-        if instance['Instances'][0]['State']['Name'] != 'terminated':
+        status = instance['Instances'][0]['State']['Name']
+        if status == "running":
           instance_type = instance['Instances'][0]['InstanceType']
           public_ip = instance['Instances'][0]['NetworkInterfaces'][0]['Association']['PublicIp']
-          status = instance['Instances'][0]['State']['Name']
-          print("  Instance: %s - %s - " %(instance_type, public_ip, status))
+          print("  Instance: %s - %s - %s " %(instance_type, public_ip, status))
         else:
           instance_type = instance['Instances'][0]['InstanceType']
-          status = instance['Instances'][0]['State']['Name']
           print("  Instance: %s - %s" %(instance_type, status))
     except ClientError as e:
-      if e.response['Error']['Code'] == 'UnauthorizedOperation':
-      #botocore.exceptions.ClientError: An error occurred (UnauthorizedOperation) when calling the DescribeInstances operation: You are not authorized to perform this operation.
-        print("  Unauthorized, moving on")
-        pass
+      print("  Failure Reason: %s" %e.response['Error']['Code'])
+      return
 
   def list_lightsail():
     pass
@@ -58,7 +58,7 @@ class AWSEnumerator():
 
 def main():
   """Main Execution"""
-  parser = argparse.ArgumentParser(description='AWS Key Enumerator',
+  parser = argparse.ArgumentParser(description='AWS API Key Enumerator',
                                   formatter_class=argparse.RawDescriptionHelpFormatter,
                                   epilog="Example: \n\t %s A95AIP7DU586PRYEASDYQ 5BoKxK4gqweIFqu5O94950VR2CqbJASJDI5S "%sys.argv[0])
 
