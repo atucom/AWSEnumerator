@@ -33,19 +33,21 @@ class AWSEnumerator():
   def list_ec2(self):
     #list out count, name, public DNS, IP,
     print("Checking for EC2 Instances")
-    ec2_client = self.session.client("ec2")
     try:
-      ec2_instances = ec2_client.describe_instances()
-      print("  Total # of EC2 Instances: %s" % len(ec2_instances['Reservations']))
-      #ec2 json responses have a lot of arrays and lists so parsing them is dumb
-      for instance in ec2_instances['Reservations']:
-        status = instance['Instances'][0]['State']['Name']
+      ec2_resource = self.session.resource("ec2")
+      ec2_client = self.session.client("ec2")
+      instance_ids = []
+      for i in ec2_resource.instances.all():
+          instance_ids.append(i.id)
+      print("  Total # of EC2 Instances: %s" % len(instance_ids))
+      for id in instance_ids:
+        response = ec2_client.describe_instances(InstanceIds=instance_ids, Filters=[{'Name':"instance-id", 'Values':[id] }])
+        status =         response['Reservations'][0]['Instances'][0]['State']['Name']
+        instance_type = response['Reservations'][0]['Instances'][0]['InstanceType']
         if status == "running":
-          instance_type = instance['Instances'][0]['InstanceType']
-          public_ip = instance['Instances'][0]['NetworkInterfaces'][0]['Association']['PublicIp']
+          public_ip =   response['Reservations'][0]['Instances'][0]['NetworkInterfaces'][0]['Association']['PublicIp']
           print("    Instance: %s - %s - %s " %(instance_type, public_ip, status))
         else:
-          instance_type = instance['Instances'][0]['InstanceType']
           print("    Instance: %s - %s" %(instance_type, status))
     except ClientError as e:
       print("    Failure Reason: %s" %e.response['Error']['Code'])
